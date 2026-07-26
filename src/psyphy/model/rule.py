@@ -99,7 +99,7 @@ class ContinuousTouchRule:
         self.nonlinear_func = nonlinear_func
         self._update_rule()
 
-    def apply_rule(self, stimulus: jnp.array):
+    def apply_rule(self, stimulus: jnp.ndarray):
         """
         Applies the rule to a given stimulus. Returns the associated response.
         (Note that this also serves to get the adjusted mu for closed-form calculations.)

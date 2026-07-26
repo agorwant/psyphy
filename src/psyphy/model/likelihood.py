@@ -842,7 +842,7 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
     Continuous touch task using a single two-feature stimulus to guide a
     two-dimensional touch response (closed form solution).
 
-    Implements the full single-stimulus based continous touch response task:
+    Implements the full single-stimulus based continuous touch response task:
         - Applies the known rule to relate the stimulus Gaussian distribution
         features to the resulting tap location.
 
@@ -866,10 +866,10 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
         model: Any,
         *,
         key: Any = None,
-    ) -> jnp.ndarray:
+    ) -> tuple[jnp.ndarray, jnp.ndarray]:
         """Return (mu, sigma) for a single trial
 
-        Will used closed-form calculation if possible (determined by the rule
+        Will use closed-form calculation if possible (determined by the rule
         in config). Will use MC simulation if there is no closed form solution.
 
         Gets (mu, sigma) for the stimulus itself, then calculates (or simulates)
@@ -908,7 +908,7 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
             )
 
     def _calculate_trial(
-        self, params: Any, stimuli: jnp.array, model: Any, rule: ContinuousTouchRule
+        self, params: Any, stimuli: jnp.ndarray, model: Any, rule: ContinuousTouchRule
     ):
         """
         Calculates the closed-form solution to predict the response distribution
@@ -949,7 +949,7 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
         num_samples: int,
         key: Any,
         rule: ContinuousTouchRule,
-    ) -> jnp.ndarray:
+    ) -> tuple[jnp.ndarray, jnp.ndarray]:
         """
         Simulate a single continuous touch task trial via Monte Carlo.
 
@@ -990,7 +990,7 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
         """
 
         # Get input dimension and require Wishart mode.
-        # OddityTask is intentionally MC-only and currently only supports the
+        # ContinuousTouchTask's MC path currently only supports the
         # WPPM/Wishart covariance parameterization.
         input_dim = stimuli.shape[0]
         if model.basis_degree is None:
@@ -1048,7 +1048,7 @@ class ContinuousTouchTask(GaussianTaskLikelihood):
         # STEP 2: apply rule
         # ========================================================================
         # We use the rule defined in the configuration.
-        # Rule specifics are delegated to that rule (which must be a ContinuuousTouchRule)
+        # Rule specifics are delegated to that rule (which must be a ContinuousTouchRule)
         # allow for flexibility in the rule details.
 
         rule_based_resps = jax.vmap(rule.apply_rule)(z_stim)

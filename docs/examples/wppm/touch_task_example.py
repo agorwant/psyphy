@@ -26,10 +26,6 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 
-# --8<-- [start:imports]
-# (imports above are included via mkdocs-snippets)
-# --8<-- [end:imports]
-
 # Ensure local src is importable when running directly
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../src"))
@@ -103,15 +99,6 @@ def _ellipse_segments_from_covs(
 
 # 1) Ground truth: Wishart process field
 
-# Original constants describing simulation:
-# NUM_GRID_PTS = jnp.float32(10)      # Number of reference points over stimulus space.
-# NUM_TRIALS = jnp.float32(4000)      # Number of trials in simulated dataset.
-# # MIN_LR = jnp.float32(-7)
-# # MAX_LR = jnp.float32(-3)
-#
-# # python simulate_2d.py --optimizer sgd --learning_rate 5e-5 --momentum 0.9 --mc_samples 500 --bandwidth 1e-2 --total_steps 1000
-
-
 NUM_GRID_PTS = 10  # Number of reference points over stimulus space.
 NUM_TRIALS = 400  # Total number of trials in the simulated dataset.
 
@@ -140,13 +127,13 @@ rule = (
     ContinuousTouchRule()
 )  # Default rule relationship is to tap exactly according to stimulus
 
-task = ContinuousTouchTask(config=ContinuousTouchTaskConfig())
+task = ContinuousTouchTask(config=ContinuousTouchTaskConfig(rule=rule))
 noise = GaussianNoise(sigma=0.1)
 
 # Set all Wishart process hyperparameters in Prior
 truth_prior = Prior(
     input_dim=input_dim,  # (2D)
-    basis_degree=basis_degree,  # (5)
+    basis_degree=basis_degree,  # (4)
     extra_embedding_dims=extra_dims,  # (1)
     decay_rate=decay_rate,  # for basis functions
     variance_scale=variance_scale,  # how big covariance matrices
@@ -219,7 +206,7 @@ print("[2/5] Building model and optimizer...")
 # --8<-- [start:build_model]
 prior = Prior(
     input_dim=input_dim,  # (2D)
-    basis_degree=basis_degree,  # 5
+    basis_degree=basis_degree,  # 4
     extra_embedding_dims=extra_dims,  # 1
     decay_rate=decay_rate,  # for basis functions (how quickly they vary)
     variance_scale=variance_scale,  # how big covariance matrices
